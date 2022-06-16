@@ -1,75 +1,59 @@
-const rps = ['rock', 'paper', 'scissors'];
+// get the button tag and put it into buttons variable
+const buttons = document.querySelectorAll('button');
 let playerScore = 0;
 let computerScore = 0;
 
+// Uses Math.random() to generate a number between 0-2 for the computer's choice
 const computerPlay = () => {
-    // Uses Math.random() to generate a number between 0-2
-    return rps[Math.floor(Math.random() * rps.length)];
+    let choices = ['Rock', 'Paper', 'Scissors'];
+    return choices[Math.floor(Math.random() * choices.length)];
 }
 
-
-// Play a single round
-const playRound = (playerSelection, computerSelection) => {
-    console.log('Player:', playerSelection, 'Computer:', computerSelection)
-    switch (playerSelection) {
-        case 'rock': 
-            if (computerSelection === 'rock') {
-                return 'TIE GAME!!';
-            } else if (computerSelection === 'paper') {
-                computerScore++;
-                return 'You Lose...';
-            } else if (computerSelection === 'scissors') {
-                playerScore++;
-                return 'YOU ARE THE WINNER!';
-            }
-        break;
-
-        case 'paper': 
-            if (computerSelection === 'paper') {
-                return 'TIE GAME!!';
-            } else if (computerSelection === 'scissors') {
-                computerScore++;
-                return 'You Lose...';
-            } else if (computerSelection === 'rock') {
-                playerScore++;
-                return 'YOU ARE THE WINNER!';
-            }
-        break;
-
-        case 'scissors': 
-            if (computerSelection === 'scissors') {
-                return 'TIE GAME!!';
-            } else if (computerSelection === 'rock') {
-                computerScore++;
-                return 'You Lose...';
-            } else if (computerSelection === 'paper') {
-                playerScore++;
-                return 'YOU ARE THE WINNER!';
-            }
-        break;
-    }
+// This function hides the buttons after either player wins
+const hideButtons = () => {
+    buttons.forEach((e) => {
+        e.disabled = true;
+    })
 }
 
-const game = () => {
-    // Play game 5 times
-    for (let i = 0; i < 5; i++) {
-        const playerSelection = window.prompt('rock, paper, or scissors? ');
-        const computerSelection = computerPlay();
+// Play the round and take in the player's selection to start the game
+const playRound = (playerSelection) => {
+    let computerSelection  = computerPlay();
+    let result = '';
 
-        // Call playRound function, passing in newly returned values
-        console.log(playRound(playerSelection, computerSelection));
+    // If the PLAYER WINS
+    if (
+        (playerSelection === 'Rock' && computerSelection === 'Scissors') ||
+        (playerSelection === 'Paper' && computerSelection === 'Rock') ||
+        (playerSelection === 'Scissors' && computerSelection === 'Paper')
+    ) {
+        playerScore++;
+        result = `Player Win! ${playerSelection} beats ${computerSelection} <br><br> Player: ${playerScore} Computer: ${computerScore}<br><br>`;
+    
+        if (playerScore === 5) {
+            result += '✔️✔️✔️ CONGRATULATIONS YOU WON THE GAME!! ✔️✔️✔️';
+            hideButtons();
+        }
+    } else if (playerSelection === computerSelection) { // If TIE GAME
+        result = `😐😐😐 TIE GAME 😐😐😐`;
+    } else { // Else the COMPUTER WINS
+        computerScore++;
+        result = `Computer Win! ${computerSelection} beats ${playerSelection} <br><br> Player: ${playerScore} Computer: ${computerScore}<br><br>`;
+    
+        if (computerScore === 5) {
+            result += `🤖🤖🤖 COMPUTER WON THE GAME!! 🤖🤖🤖`;
+            hideButtons();
+        }
     }
-    // Display scores
-    console.log('Player SCORE: ', playerScore, 'Computer SCORE: ', computerScore);
 
-    // Determine if game is tied or there is winner
-    if (playerScore === computerScore) {
-        return 'Tie game... No winner';
-    } else if (playerScore > computerScore) {
-        return 'PlAYER WINS';
-    } else {
-        return 'COMPUTER WINS';
-    }
+    // Add the result to the div that has an ID of result
+    document.getElementById("result").innerHTML = result;
+    return;
 }
 
-console.log(game());
+// Start the game when one button is clicked
+buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+        playRound(button.value);
+    });
+});
